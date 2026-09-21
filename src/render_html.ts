@@ -51,5 +51,10 @@ export function renderBlockInner(b: Block): string {
     return `<table class="tbl"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
   }
   if (b.divider) return '<hr class="div">';
+  if (b.view) {
+    const title = typeof b.view.title === "string" ? b.view.title : "View";
+    const id = typeof b.view.id === "string" ? b.view.id : "";
+    return `<div class="ctx">${esc(title)}${id && id !== title ? ` (${esc(id)})` : ""} — view renderer unavailable</div>`;
+  }
   return "";
 }

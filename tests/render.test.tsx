@@ -37,6 +37,12 @@ describe("renderBlockInner (vanilla HTML)", () => {
     expect(html).toContain("<th>Name</th>");
     expect(html).toContain("aion/web");
   });
+
+  it("degrades an unrendered view to a readable summary", () => {
+    const html = renderBlockInner({ view: { id: "chart", title: "Latency" } });
+    expect(html).toContain("Latency (chart)");
+    expect(html).toContain("view renderer unavailable");
+  });
 });
 
 describe("<Conversation> (react)", () => {
@@ -70,11 +76,10 @@ describe("view blocks", () => {
     expect(seen).toEqual([[descriptor, "b1"]]);
   });
 
-  // The point of the seam: a host that has NOT opted in is unaffected by an agent
-  // emitting a view. It renders as nothing, exactly like any unknown block kind —
-  // so shipping this arm cannot break an existing consumer.
-  it("renders nothing when the host supplies no renderer", () => {
-    expect(renderToStaticMarkup(createElement(BlockView, { block: viewBlock }))).toBe("");
+  it("degrades to a readable summary when the host supplies no renderer", () => {
+    const html = renderToStaticMarkup(createElement(BlockView, { block: viewBlock }));
+    expect(html).toContain("Demo (demo)");
+    expect(html).toContain("view renderer unavailable");
   });
 
   it("does not call the host renderer for non-view blocks", () => {

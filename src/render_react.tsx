@@ -106,9 +106,13 @@ export function BlockView({
     );
   }
   if (block.divider) return <hr className="div" />;
-  // No host renderer ⇒ nothing, which is this component's existing contract for
-  // a block kind it cannot draw. A view block is then inert rather than broken,
-  // so a host that has not opted in is unaffected by an agent emitting one.
-  if (block.view) return renderView ? renderView(block.view, block) : null;
+  // No host renderer: preserve a readable degradation instead of silently
+  // dropping a composed view (including a chart) from the transcript.
+  if (block.view) {
+    if (renderView) return renderView(block.view, block);
+    const title = typeof block.view.title === "string" ? block.view.title : "View";
+    const id = typeof block.view.id === "string" ? block.view.id : "";
+    return <div className="ctx">{title}{id && id !== title ? ` (${id})` : ""} — view renderer unavailable</div>;
+  }
   return null;
 }
